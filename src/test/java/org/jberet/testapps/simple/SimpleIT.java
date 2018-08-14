@@ -10,21 +10,27 @@
 
 package org.jberet.testapps.simple;
 
+import java.util.concurrent.TimeUnit;
+import javax.batch.operations.JobOperator;
+import javax.batch.runtime.BatchRuntime;
 import javax.batch.runtime.BatchStatus;
 
-import org.jberet.testapps.common.AbstractIT;
+import org.jberet.runtime.JobExecutionImpl;
 import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * Tests using {@code arrayItemReader} and {@code mockItemWriter} in jberet-support.
  */
-public class SimpleIT extends AbstractIT {
+public class SimpleIT {
     private static final String simpleJob = "simple.xml";
+    private static final JobOperator jobOperator = BatchRuntime.getJobOperator();
 
     @Test
     public void readArrayWriteToConsole() throws Exception {
-        startJobAndWait(simpleJob);
+        final long jobExecutionId = jobOperator.start(simpleJob, null);
+        final JobExecutionImpl jobExecution = (JobExecutionImpl) jobOperator.getJobExecution(jobExecutionId);
+        jobExecution.awaitTermination(5, TimeUnit.MINUTES);
         Assert.assertEquals(BatchStatus.COMPLETED, jobExecution.getBatchStatus());
     }
 }
