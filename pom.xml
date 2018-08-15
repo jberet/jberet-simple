@@ -72,7 +72,6 @@
             <groupId>org.jberet</groupId>
             <artifactId>jberet-se</artifactId>
             <version>${version.org.jberet}</version>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.jberet</groupId>
@@ -148,7 +147,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>org.jberet.se.Main</Main-Class>
+                            <Main-Class>org.jberet.samples.simple.Main</Main-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>
