@@ -38,6 +38,7 @@
     </licenses>
 
     <properties>
+        <main.class>org.jberet.samples.simple.Main</main.class>
         <version.org.jberet>1.3.0.Final</version.org.jberet>
     </properties>
 
@@ -45,6 +46,7 @@
         <dependency>
             <groupId>org.jboss.spec.javax.batch</groupId>
             <artifactId>jboss-batch-api_1.0_spec</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>
@@ -101,6 +103,16 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+            <groupId>org.jboss.spec.javax.el</groupId>
+            <artifactId>jboss-el-api_3.0_spec</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
             <groupId>org.wildfly.security</groupId>
             <artifactId>wildfly-security-manager</artifactId>
             <scope>runtime</scope>
@@ -121,6 +133,12 @@
             <artifactId>jackson-databind</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
@@ -147,9 +165,23 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>org.jberet.samples.simple.Main</Main-Class>
+                            <Main-Class>${main.class}</Main-Class>
                         </manifestEntries>
                     </archive>
+                </configuration>
+            </plugin>
+
+            <!-- run this project with commands like:
+                mvn exec:java
+                mvn exec:java -Dexec.arguments="simple.xml"
+                mvn exec:java -Dexec.arguments="simple.xml jobParam1=x jobParam2=y jobParam3=z"
+            -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>${main.class}</mainClass>
+                    <arguments>simple.xml</arguments>
                 </configuration>
             </plugin>
         </plugins>
