@@ -129,6 +129,72 @@ job.batch "simple" deleted
 
 ```
 
+## How to Schedule Repeating Job Executions with Kubernetes Cron Jobs from OpenShift Command Line
+
+First, create a yaml file (`simple-cron.yaml`) to define the Kubernetes crob job spec.
+The cron expression `*/1 * * * *` specifies running the batch job every minute.
+
+```yaml
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: simple-cron
+spec:
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: simple-cron
+            image: docker-registry.default.svc:5000/pr/jberet-simple
+            command: ["java",  "-jar", "/deployments/jberet-simple.jar", "simple.xml", "jobParam1=x", "jobParam2=y"]
+          restartPolicy: OnFailure
+
+```
+
+Then, run the following commands to tell OpenShift to schedule the job executions:
+
+```
+
+$ oc create -f simple-cron.yaml
+cronjob.batch "simple-cron" created
+
+$ oc get cronjobs
+NAME          SCHEDULE      SUSPEND   ACTIVE    LAST SCHEDULE   AGE
+simple-cron   */1 * * * *   False     0         <none>          7s
+
+# Get status of a specific cron job
+$ oc get cronjob simple-cron
+NAME          SCHEDULE      SUSPEND   ACTIVE    LAST SCHEDULE   AGE
+simple-cron   */1 * * * *   False     0         <none>          24s
+
+# Get continuous status of a specific cron job with --watch option
+$ oc get cronjob simple-cron --watch
+NAME          SCHEDULE      SUSPEND   ACTIVE    LAST SCHEDULE   AGE
+simple-cron   */1 * * * *   False     0         <none>          33s
+simple-cron   */1 * * * *   False     1         7s        46s
+simple-cron   */1 * * * *   False     0         37s       1m
+
+$ oc get pods
+NAME                           READY     STATUS              RESTARTS   AGE
+postgresql-5-sbfm5             1/1       Running             0          27d
+simple-cron-1536609780-fmrhf   0/1       ContainerCreating   0          1s
+simple-mpq8h                   0/1       Completed           0          26d
+
+$ oc logs simple-cron-1536609780-fmrhf
+
+$ oc delete cronjobs/simple-cron
+cronjob.batch "simple-cron" deleted
+
+# Another variation of the delete command:
+$ oc delete cronjob simple-cron
+cronjob.batch "simple-cron" deleted
+
+```
 
 ## More info
 
@@ -137,3 +203,5 @@ job.batch "simple" deleted
 [JBERET-349](https://issues.jboss.org/browse/JBERET-349) Integrate JBeret with openshift scheduled job capability
 
 [JBERET-448](https://issues.jboss.org/browse/JBERET-448) Move test-apps/simple to its own repo
+
+[JBERET-449](https://issues.jboss.org/browse/JBERET-449) Support batch job execution with OpenShift cron job scheduling mechanism
