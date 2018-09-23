@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: simple
+spec:
+  parallelism: 1
+  completions: 1
+  template:
+    metadata:
+      name: simple
+    spec:
+      containers:
+      - name: jberet-simple
+        image: docker-registry.default.svc:5000/pr/jberet-simple
+        command: ["java",  "-jar", "/deployments/jberet-simple.jar", "simple.xml", "jobParam1=x", "jobParam2=y"]
+      restartPolicy: OnFailure
+
