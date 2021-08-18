@@ -22,7 +22,7 @@ prints them to the console. The 2 batch artifacts used in this application are:
     mvn exec:java
 
     # run with job xml
-    mvn exec:java -Dexec.arguments="simplxe.xml"
+    mvn exec:java -Dexec.arguments="simple.xml"
 
     # run with job xml and job parameters
     mvn exec:java -Dexec.arguments="simple.xml jobParam1=x jobParam2=y jobParam3=z"
